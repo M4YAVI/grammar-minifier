@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 export function serveStatic(app: Express) {
-  const distPath = __dirname;
+  const distPath = path.join(__dirname, "../dist");
 
   if (!fs.existsSync(path.join(distPath, "index.html"))) {
     throw new Error(
