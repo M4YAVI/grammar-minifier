@@ -38,16 +38,24 @@ export default function SmartEditor() {
     },
     onError: (error: Error) => {
       let errorMessage = "Something went wrong. Please try again.";
+
+      // Try to parse JSON error message
       if (error.message) {
         try {
-          const parsed = JSON.parse(error.message.split(": ").slice(1).join(": "));
-          errorMessage = parsed.error || error.message;
+          // Check if it looks like HTML (common in 404/500 from hosting providers)
+          if (error.message.includes("<!DOCTYPE html>") || error.message.includes("<html")) {
+            errorMessage = "Server error (HTML response). The API might be down or misconfigured.";
+          } else {
+            const parsed = JSON.parse(error.message.split(": ").slice(1).join(": "));
+            errorMessage = parsed.error || error.message;
+          }
         } catch {
           errorMessage = error.message.includes(": ")
             ? error.message.split(": ").slice(1).join(": ")
             : error.message;
         }
       }
+
       toast({
         title: "Analysis Failed",
         description: errorMessage,
